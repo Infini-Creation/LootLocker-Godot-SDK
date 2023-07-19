@@ -58,7 +58,9 @@ func get_score_list(leaderboard_name : String, count: int = 3, after: int = 0) -
 
 # Submit scores for member on leaderboard. The member_id in the Game API is automatically
 # filled with the currently authenticated players id.
-func submit_score(leaderboard_name : String, score : int, member_id : int = LootLocker.current_user.id, metadata = null) -> LootLockerLeaderboardsResponse:
+func submit_score(leaderboard_name : String, score : int, member_id : int = 0, metadata = null) -> LootLockerLeaderboardsResponse:
+	if LootLocker.current_user != null and member_id == 0:
+		member_id = LootLocker.current_user.id
 	var data = {
 		"member_id": str(member_id),
 		"score": score,
@@ -73,9 +75,10 @@ func submit_score(leaderboard_name : String, score : int, member_id : int = Loot
 # Creates and returns a LootLockerLeaderboardResult class which stores the values returned by the API
 func extract_result(from_dict) -> LootLockerLeaderboardResult:
 	var res = LootLockerLeaderboardResult.new()
-	res.member_id = from_dict.get("member_id").to_int()
-	res.rank = from_dict.get("rank")
-	res.score = from_dict.get("score")
+	if from_dict.get("member_id") != null:
+		res.member_id = from_dict.get("member_id").to_int()
+		res.rank = from_dict.get("rank")
+		res.score = from_dict.get("score")
 	if from_dict.get("player") != null:
 		var p : Dictionary = from_dict.get("player")
 		var player = LootLockerUser.new()
